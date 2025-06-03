@@ -36,7 +36,7 @@ namespace Api.Controllers
                 if (!Directory.Exists(qrCodeDirectory))
                     Directory.CreateDirectory(qrCodeDirectory);
 
-                string qrContent = $"7920{usuario.id}099";
+                string qrContent = $"792{usuario.id}099";
 
                 using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
                 using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q))
@@ -45,8 +45,8 @@ namespace Api.Controllers
                 {
                     string fileName = $"{Guid.NewGuid()}.png";
                     string filePath = Path.Combine(qrCodeDirectory, fileName);
-                    qrCodeImage.Save(filePath, ImageFormat.Png);
-                    usuario.qrcode = $"QRCodeImagens/{fileName}";
+                    qrCodeImage.Save(qrContent);
+                    usuario.qrcode = $"{qrContent}";
                 }
 
                 // Atualiza o usuário para salvar o caminho do QR code

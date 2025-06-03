@@ -3261,11 +3261,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Pedro Martins Senai\\CodeLocker\\Api\\back-end.csproj",
+      "projectUniqueName": "C:\\Pedro Martins Senai\\CodeLocker_Back-End\\back-end.csproj",
       "projectName": "back-end",
-      "projectPath": "C:\\Pedro Martins Senai\\CodeLocker\\Api\\back-end.csproj",
+      "projectPath": "C:\\Pedro Martins Senai\\CodeLocker_Back-End\\back-end.csproj",
       "packagesPath": "C:\\Users\\Pedro Martins\\.nuget\\packages\\",
-      "outputPath": "C:\\Pedro Martins Senai\\CodeLocker\\Api\\obj\\",
+      "outputPath": "C:\\Pedro Martins Senai\\CodeLocker_Back-End\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Pedro Martins\\AppData\\Roaming\\NuGet\\NuGet.Config"
