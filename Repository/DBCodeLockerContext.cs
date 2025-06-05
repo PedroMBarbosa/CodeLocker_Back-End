@@ -12,5 +12,7 @@ namespace Api.Repository
 
         public DbSet<Usuario> usuario { get; set; }
         public DbSet<Salas> Salas { get; set; }
+        public DbSet<Tipo> Tipos { get; set; }
+        public DbSet<Status> Status { get; set; }
     }
 }

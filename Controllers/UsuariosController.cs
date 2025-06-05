@@ -24,32 +24,37 @@ namespace Api.Controllers
         {
             try
             {
-                // Verifica se já existe um cliente com o mesmo email
+
                 if (_context.usuario.Any(u => u.email == usuario.email))
                     return BadRequest(new { message = "Usuário já existe!" });
 
-                // Primeiro salva o usuário para gerar o ID
+
                 _context.usuario.Add(usuario);
                 _context.SaveChanges();
 
-                // Gera QR Code com o código personalizado: "7920" + usuario.id + "099"
+
                 if (!Directory.Exists(qrCodeDirectory))
                     Directory.CreateDirectory(qrCodeDirectory);
 
                 string qrContent = $"792{usuario.id}099";
+
+                if (!Directory.Exists(qrCodeDirectory))
+                    Directory.CreateDirectory(qrCodeDirectory);
 
                 using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
                 using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q))
                 using (QRCoder.QRCode qrCode = new QRCoder.QRCode(qrCodeData))
                 using (Bitmap qrCodeImage = qrCode.GetGraphic(20))
                 {
-                    string fileName = $"{Guid.NewGuid()}.png";
+                    string fileName = $"{qrContent}.png";
                     string filePath = Path.Combine(qrCodeDirectory, fileName);
-                    qrCodeImage.Save(qrContent);
-                    usuario.qrcode = $"{qrContent}";
+                    qrCodeImage.Save(filePath, ImageFormat.Png);
+
+                    usuario.qrcode = qrContent;
                 }
 
-                // Atualiza o usuário para salvar o caminho do QR code
+
+
                 _context.SaveChanges();
 
                 return Ok(new { message = "Usuário registrado com sucesso!" });
@@ -71,13 +76,14 @@ namespace Api.Controllers
             var usuario = _context.usuario.Find(id);
             if (usuario == null)
             {
-                return NotFound(new{message="não foi possivel encontrar o usuário"});
+                return NotFound(new { message = "não foi possivel encontrar o usuário" });
             }
             _context.usuario.Remove(usuario);
             _context.SaveChanges();
 
-            return Ok(new{message="usuário deletado com sucesso"});
+            return Ok(new { message = "usuário deletado com sucesso" });
         }
+
         [HttpPut("EditarUsuario/{id}")]
         public IActionResult EditarUsuario(int id, [FromBody] Usuario usuarioAtualizado)
         {
@@ -95,14 +101,15 @@ namespace Api.Controllers
             _context.SaveChanges();
 
             return Ok(new { message = "Usuário atualizado com sucesso." });
-            
         }
+
         [HttpGet("ListarUsuarios")]
         public IActionResult ListarUsuarios()
         {
             var usuarios = _context.usuario.ToList();
             return Ok(usuarios);
         }
+
         [HttpPost("Login")]
         public IActionResult Login([FromBody] LoginDTO login)
         {
@@ -140,6 +147,39 @@ namespace Api.Controllers
             }
         }
 
+        [HttpPost("VerificaQRCode/{qrcode}")]
+        public IActionResult VerificaQRCode(string qrcode)
+        {
+            try
+            {
+                var usuario = _context.usuario.FirstOrDefault(u => u.qrcode == qrcode);
 
+                if (usuario == null)
+                {
+                    return NotFound(new { message = "QR Code inválido ou não encontrado." });
+                }
+
+                return Ok(new
+                {
+                    message = "QR Code válido.",
+                    usuario = new
+                    {
+                        usuario.id,
+                        usuario.nome,
+                        usuario.email,
+                        usuario.telefone,
+                        usuario.qrcode
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = "Erro ao verificar QR Code.",
+                    erro = ex.InnerException?.Message ?? ex.Message
+                });
+            }
+        }
     }
 }
